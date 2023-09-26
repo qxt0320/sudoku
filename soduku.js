@@ -1,7 +1,7 @@
 function SD(){
 	this.sdArr = [];//生成的数独数组	
 	this.errorArr = [];//错误的格子。
-	this.blankNum = 30;//空白格子数量 
+	this.blankNum = [];//空白格子数量 
 	this.backupSdArr = [];//数独数组备份。
 }
 SD.prototype={
@@ -202,7 +202,7 @@ SD.prototype={
 		}
 		$(".sdli:eq(2) .sdspan,.sdli:eq(5) .sdspan").addClass('bb');
 		$(".sdli:eq(3) .sdspan,.sdli:eq(6) .sdspan").addClass('bt');
-	}		
+	}
 }
 
 //生成随机正整数
@@ -232,14 +232,27 @@ function　arrMinus(arr1,arr2){
 	return resArr;
 }
 
-function startGame() {	
+let sudokus = [];
+// 生成数独数组并存储到 sudokus 数组中
+async function generateSudokus() {
+	let promises = [];
+	for (let i = 0; i < 9; i++) {
+	  let sd = new SD();
+	  promises.push(new Promise(resolve => {
+		sd.init();
+		resolve(sd);
+	  }));
+	}
+	sudokus = await Promise.all(promises);
+	return sudokus
+  }
+  generateSudokus().then(sudokus => {
+	for (let i = 0; i < sudokus.length-1; i++) { // 循环前8个数独数组
+	  console.log(sudokus[i].sdArr); // 打印生成的数独
+	}
+  });
+
+  function startGame() {
 	window.location.href = 'soduku.html';
 }
-for(let i=0; i<9; i++) {
-	const worker = new Worker('SD.js');  
-	worker.postMessage('generate');
-  	worker.onmessage = function(e) {
-	// 接收数独数组
-	const sudoku = e.data; 
-	}
-  }
+
